@@ -154,3 +154,30 @@ void cetakPesan(int kode_pesan){
             break;
     }
 }
+
+void tampilkanSemuaBarang(void){
+    if (head_node == NULL){
+        Serial.println(F("-> INFO: Inventaris saat ini kosong."));
+        return;
+    }
+
+    Serial.println(F("===================================================================================================="));
+    Serial.println(F("ID\t| Nama\t\t| Kategori\t| Stok\t| Lokasi\t| Status\t| Pemilik\t| PIC"));
+    Serial.println(F("===================================================================================================="));
+
+    Barang* current = head_node;
+    
+    while (current != NULL){
+        Serial.print(current->id);       Serial.print(F("\t| "));
+        Serial.print(current->nama);     Serial.print(F("\t| "));
+        Serial.print(current->kategori); Serial.print(F("\t| "));
+        Serial.print(current->stok);     Serial.print(F("\t| "));
+        Serial.print(current->lokasi);   Serial.print(F("\t| "));
+        Serial.print(current->status);   Serial.print(F("\t| "));
+        Serial.print(current->pemilik);  Serial.print(F("\t| "));
+        Serial.println(current->pic);    
+        current = current->next;         
+    }
+    
+    Serial.println(F("===================================================================================================="));
+}
