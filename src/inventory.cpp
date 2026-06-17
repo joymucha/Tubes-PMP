@@ -1,5 +1,6 @@
 #include "inventory.h"
 #include <stdlib.h> // Library standar C untuk mengenali NULL
+#include <string.h>
 
 // Fungsi bertipe void menggunakan double pointer (Pass-by-Reference)
 void inisialisasiList(Barang** head_pointer) {
