@@ -3,9 +3,8 @@
 #include <Arduino.h>
 #include <string.h> 
 #include <stdlib.h>
-#include <stdio.h> // Wajib untuk fungsi sprintf
+#include <stdio.h> 
 
-// Deklarasi extern agar file ini bisa melihat variabel global dari main.ino
 extern Barang* head_node;
 extern Barang* tail_node; 
 
@@ -71,17 +70,13 @@ void parseDanEksekusi(char* input_teks) {
 
             unsigned int id = (unsigned int)strtoul(token_id, NULL, 10);
             
-            // --- PENANGANAN BARU TANPA MENGUBAH VOID ---
             Barang* target = NULL;
             
-            // 1. Cek dulu apakah ID tersebut ada di dalam memori
             cariBarang(head_node, id, &target);
             
             if (target == NULL) {
-                // 2. Jika tidak ada, cetak pesan error dan batalkan penghapusan
                 cetakPesan(PESAN_ID_TIDAK_DITEMUKAN);
             } else {
-                // 3. Jika barang terbukti ada, baru panggil fungsi hapusnya
                 hapusBarang(id);
                 Serial.print(F("-> BERHASIL: Perintah hapus untuk ID ["));
                 Serial.print(id);
@@ -178,7 +173,6 @@ void tampilkanSemuaBarang(void){
     }
 
     Serial.println(F("======================================================================================================"));
-    // Header disesuaikan dengan lebar karakter sprintf di bawah
     Serial.println(F("ID    | Nama            | Kategori    | Stok  | Lokasi | Status      | Pemilik     | PIC"));
     Serial.println(F("======================================================================================================"));
 
@@ -186,8 +180,6 @@ void tampilkanSemuaBarang(void){
     char buffer[120]; 
     
     while (current != NULL){
-        // %-5u artinya: integer positif (unsigned), rata kiri (minus), dialokasikan 5 spasi
-        // %-15s artinya: string, rata kiri, dialokasikan 15 spasi
         sprintf(buffer, "%-5u | %-15s | %-11s | %-5d | %-6s | %-11s | %-11s | %-11s", 
                 current->id, current->nama, current->kategori, current->stok, 
                 current->lokasi, current->status, current->pemilik, current->pic);

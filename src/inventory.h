@@ -1,5 +1,3 @@
-// --- File: inventory.h ---
-
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
@@ -27,28 +25,16 @@ enum KodePesan {
     PESAN_TAMBAH_BERHASIL
 };
 
-// Total alokasi per node: ~78 Byte.
-// Dengan ukuran ini, SRAM 2KB Arduino aman menampung hingga 20-22 barang
-// tanpa menyentuh batas kritis memori sistem operasi.
-
-
-// 2. Deklarasi Fungsi Void untuk Operasi Linked List (CRUD)
-// Perhatikan: Kita tidak menulis isi fungsinya di sini, hanya "judul" fungsinya saja.
-
 void inisialisasiList(Barang** head_pointer);
 
-// Fungsi Tambah Node di akhir (Tail)
 void tambahBarang(Barang** head, Barang** tail, unsigned int id, const char* nama, 
                   const char* kategori, int stok, const char* lokasi, 
                   const char* status, const char* pemilik, const char* pic, int *kode_pesan);
   
-// Fungsi Hapus Node (harus bisa handle head, tengah, dan tail)
 void hapusBarang(unsigned int target_id);
 
-// Fungsi Cari Node (Menggunakan double pointer untuk mengembalikan hasil pencarian)
 void cariBarang(Barang* head, unsigned int target_id, Barang** hasil_pencarian);
 
-// Fungsi Update Stok dan Status
 void updateBarang(Barang *head, unsigned int target_id, int stok_baru, char* status_baru, int *kode_pesan);
 
 #endif
