@@ -173,3 +173,51 @@ void updateBarang(Barang *head, unsigned int target_id, int stok_baru, char* sta
 
     *kode_pesan = PESAN_UPDATE_BERHASIL;
 }
+
+
+extern Barang* head_node;
+extern Barang* tail_node;
+
+void hapusBarang(unsigned int target_id) {
+    // Cek jika linked list kosong
+    if (head_node == NULL) {
+        return; // Tidak ada yang bisa dihapus
+    }
+
+    Barang* current = head_node;
+    Barang* prev = NULL;
+
+    // KASUS 1: Node yang dihapus ada di Awal (Head)
+    if (current != NULL && current->id == target_id) {
+        head_node = current->next; // Geser head ke node kedua
+        
+        // Kasus khusus: Jika barang yang dihapus adalah satu-satunya barang di list
+        if (head_node == NULL) {
+            tail_node = NULL; // List menjadi kosong total
+        }
+        
+        free(current); // Bebaskan memori SRAM
+        return;
+    }
+
+    // Traverse (Telusuri) list untuk mencari node di tengah atau akhir
+    while (current != NULL && current->id != target_id) {
+        prev = current;
+        current = current->next;
+    }
+
+    // Jika ID tidak ditemukan sampai akhir list
+    if (current == NULL) {
+        return; 
+    }
+
+    // KASUS 2 & 3: Node yang dihapus ada di Tengah atau Akhir (Tail)
+    prev->next = current->next; // Bypass node yang akan dihapus
+
+    // Jika node yang dihapus ternyata ada di Akhir (Tail)
+    if (current->next == NULL) {
+        tail_node = prev; // Update tail ke node sebelumnya
+    }
+
+    free(current); // Bebaskan memori SRAM
+}
