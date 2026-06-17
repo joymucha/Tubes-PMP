@@ -18,72 +18,103 @@ void inisialisasiUI() {
     Serial.println(F("Menunggu input dari Scanner QR...\n"));
 }
 
-// FUNGSI BARU: Wajib ada untuk menangkap ketikan Anda dari Serial Monitor
 void bacaInputSerial() {
-    // Mengecek apakah ada data/teks yang masuk
     if (Serial.available() > 0) {
-        // Membaca semua teks sampai Anda menekan tombol Enter ('\n')
         String input = Serial.readStringUntil('\n');
-        input.trim(); // Membuang spasi kosong di awal/akhir teks
+        input.trim(); 
 
         if (input.length() > 0) {
-            // Mengubah tipe String bawaan C++ menjadi array char C murni
             char buffer[150];
             input.toCharArray(buffer, sizeof(buffer));
-
-            // Melempar teks yang sudah ditangkap ke fungsi pemotong kata
             parseDanEksekusi(buffer);
         }
     }
 }
 
 void parseDanEksekusi(char* input_teks) {
-    // Memotong KATA PERTAMA dari teks sebelum tanda koma (,)
-    // Contoh: Jika input "ADD,101,Multimeter", maka token_perintah akan berisi "ADD"
+    // Mengambil perintah utama (contoh: "ADD", "FIND")
     char* token_perintah = strtok(input_teks, ",");
 
-    if (token_perintah == NULL) return; // Jika kosong, batalkan eksekusi
+    if (token_perintah == NULL) return; 
 
-    // Pengecekan perintah
     if (strcmp(token_perintah, "ADD") == 0) {
+        // Lanjutkan memotong sisa parameter satu per satu menggunakan NULL
+        char* token_id       = strtok(NULL, ",");
+        char* token_nama     = strtok(NULL, ",");
+        char* token_kategori = strtok(NULL, ",");
+        char* token_stok     = strtok(NULL, ",");
+        char* token_lokasi   = strtok(NULL, ",");
+        char* token_status   = strtok(NULL, ",");
+        char* token_pemilik  = strtok(NULL, ",");
+        char* token_pic      = strtok(NULL, ",");
+
+        // Pengecekan keamanan: Pastikan user tidak mengetik format yang kurang
+        if (!token_id || !token_nama || !token_kategori || !token_stok || 
+            !token_lokasi || !token_status || !token_pemilik || !token_pic) {
+            Serial.println(F("-> ERROR: Format ADD tidak lengkap. Gunakan format: ADD,id,nama,kategori,stok,lokasi,status,pemilik,pic"));
+            return;
+        }
+
+        // Konversi tipe data String ke Integer untuk ID dan Stok
+        unsigned int id = (unsigned int)strtoul(token_id, NULL, 10);
+        int stok = (int)strtol(token_stok, NULL, 10);
         int kode_pesan;
-        // (Sisa parameter hardcode untuk menguji coba logika Linked List)
-        tambahBarang(&head_node, &tail_node, 101, "Sensor Suhu", "Modul", 5, "RakA", "Tersedia", "Lab", "Budi", &kode_pesan);
+
+        // Eksekusi penambahan ke Linked List dengan data dinamis
+        tambahBarang(&head_node, &tail_node, id, token_nama, token_kategori, stok, token_lokasi, token_status, token_pemilik, token_pic, &kode_pesan);
+        
         cetakPesan(kode_pesan);
     } 
+    
+
     else if (strcmp(token_perintah, "DEL") == 0) {
         Serial.println(F("-> BERHASIL: Perintah DEL diterima (Fungsi Hapus belum aktif)."));
     } 
+    
     else if (strcmp(token_perintah, "FIND") == 0) {
+        // Ambil ID yang mau dicari
+        char* token_id = strtok(NULL, ",");
+        
+        if (token_id == NULL) {
+            Serial.println(F("-> ERROR: Format FIND salah. Gunakan format: FIND,id"));
+            return;
+        }
+
+        unsigned int id = (unsigned int)strtoul(token_id, NULL, 10);
         Barang* hasil = NULL;
-        cariBarang(head_node, 101, &hasil);
+        
+        cariBarang(head_node, id, &hasil);
         
         if (hasil != NULL) {
-            Serial.println(F("-> BERHASIL: Barang [ID: 101] Ditemukan di dalam memori!"));
+            // Jika ketemu, cetak ID dan Nama barangnya agar lebih interaktif
+            Serial.print(F("-> BERHASIL: Barang Ditemukan! [ID: "));
+            Serial.print(hasil->id);
+            Serial.print(F("] Nama: "));
+            Serial.println(hasil->nama);
         } else {
             cetakPesan(PESAN_ID_TIDAK_DITEMUKAN);
         }
     } 
+
     else if (strcmp(token_perintah, "UPD") == 0) {
         char* token_id = strtok(NULL, ",");
         char* token_stok = strtok(NULL, ",");
         char* token_status = strtok(NULL, ",");
     
         if (token_id == NULL || token_stok == NULL || token_status == NULL) {
-            Serial.println(F("-> ERROR: Format perintah UPD salah"));
+            Serial.println(F("-> ERROR: Format perintah UPD salah. Gunakan format: UPD,id,stok_baru,status_baru"));
             return;
         }
 
-        //menguba string ke integer 
         unsigned int id = (unsigned int)strtoul(token_id, NULL, 10);
         int stok_baru = (int)strtol(token_stok, NULL, 10);
         int kode_pesan;
 
         updateBarang(head_node, id, stok_baru, token_status, &kode_pesan);
-
-        //cetak pesan hasil update
         cetakPesan(kode_pesan);
     } 
+    
+
     else if (strcmp(token_perintah, "PRINT") == 0) {
         Serial.println(F("-> Menjalankan perintah PRINT (Fungsi Tampil belum aktif)."));
     } 
