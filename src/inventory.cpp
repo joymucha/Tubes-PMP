@@ -32,13 +32,54 @@ void cariBarang(Barang* head, unsigned int target_id, Barang** hasil_pencarian) 
 // ku tambahin pointer 'tail' biar pas nambah barang langsung cepet ke tail pake pointer, ga perlu nelusurin list satu-satu sampe akhir
 void tambahBarang(Barang** head, Barang** tail, unsigned int id, const char* nama, 
                   const char* kategori, int stok, const char* lokasi, 
-                  const char* status, const char* pemilik, const char* pic) {
+                  const char* status, const char* pemilik, const char* pic, int *kode_pesan) {
     
+    if (kode_pesan == NULL){
+        return;
+    }
+
+    //cek stok valid atau tidak
+    if(stok < 0){
+        *kode_pesan = PESAN_STOK_TIDAK_VALID;
+        return;
+    }
+
+    //cek status valid atau tidak
+    if(status == NULL || status[0] == '\0' || strlen(status) >= 12){
+        *kode_pesan = PESAN_STATUS_TIDAK_VALID;
+        return;
+    }
+    if(strcmp(status, "Tersedia") != 0 && strcmp(status, "Dipinjam") != 0 && strcmp(status, "Rusak") != 0 && strcmp(status, "Habis") != 0){
+        *kode_pesan = PESAN_STATUS_TIDAK_VALID;
+        return;
+    }
+
+    //saat stok > 0, status tidak boleh "Habis"
+    if(stok > 0 && strcmp(status, "Habis") == 0){
+        *kode_pesan = PESAN_STATUS_TIDAK_VALID;
+        return;
+    }
+
+    //cek kasus khusus saat stok baru 0, status harus "Habis"
+    if(stok == 0 && strcmp(status, "Habis") != 0){
+        *kode_pesan = PESAN_STATUS_TIDAK_VALID;
+        return;
+    }
+
+    //menangani ID duplikat
+    Barang *barang_duplikat = NULL;
+    cariBarang(*head, id, &barang_duplikat);
+    if (barang_duplikat != NULL) {
+        *kode_pesan = PESAN_ID_DUPLIKAT;
+        return;
+    }
+
     // alokasi memori dinamis
     Barang* nodeBaru = (Barang*)malloc(sizeof(Barang));
     
     // kalau NULL berarti SRAM arduinonya full
     if (nodeBaru == NULL) {
+        *kode_pesan = PESAN_ALOKASI_GAGAL;
         return; 
     }
 
@@ -66,4 +107,69 @@ void tambahBarang(Barang** head, Barang** tail, unsigned int id, const char* nam
         (*tail)->next = nodeBaru; 
         *tail = nodeBaru;         
     }
+
+    *kode_pesan = PESAN_TAMBAH_BERHASIL;
+}
+
+
+void updateBarang(Barang *head, unsigned int target_id, int stok_baru, char* status_baru, int *kode_pesan){
+    
+    Barang *target = NULL;
+
+    if(kode_pesan == NULL){
+        return;
+    }
+
+    //Inventaris belum ada barang sama sekali
+    if(head == NULL){
+        *kode_pesan = PESAN_DATA_KOSONG;
+        return;
+    }
+
+    //Stok yang ingin diupdate tidak valid
+    if(stok_baru < 0){
+        *kode_pesan = PESAN_STOK_TIDAK_VALID;
+        return;
+    }
+
+    //Status yang ingin diupdate tidak valid
+    if(status_baru == NULL || status_baru[0] == '\0' || strlen(status_baru) >= 12){
+        *kode_pesan = PESAN_STATUS_TIDAK_VALID;
+        return;
+    }
+
+    //cek status sesuai dengan status yang valid
+    if(strcmp(status_baru, "Tersedia") != 0 && strcmp(status_baru, "Dipinjam") != 0 && strcmp(status_baru, "Rusak") != 0 && strcmp(status_baru, "Habis") != 0){
+        *kode_pesan = PESAN_STATUS_TIDAK_VALID;
+        return;
+    }
+
+    //cek kasus khusus saat stok baru 0, status harus "Habis"
+    if(stok_baru == 0 && strcmp(status_baru, "Habis") != 0){
+        *kode_pesan = PESAN_STATUS_TIDAK_VALID;
+        return;
+    }
+
+    //cek saat stok_baru > 0, status tidak boleh "Habis"
+    if(stok_baru > 0 && strcmp(status_baru, "Habis") == 0){
+        *kode_pesan = PESAN_STATUS_TIDAK_VALID;
+        return;
+    }
+
+    //cari barang yang mau diupdate
+    cariBarang(head, target_id, &target);
+
+    if(target == NULL){
+        *kode_pesan = PESAN_ID_TIDAK_DITEMUKAN;
+        return;
+    }
+
+    //perbarui stok
+    target->stok = stok_baru;
+
+    //perbarui status
+    strncpy(target->status, status_baru, sizeof(target->status) - 1);
+    target->status[sizeof(target->status) - 1] = '\0';
+
+    *kode_pesan = PESAN_UPDATE_BERHASIL;
 }

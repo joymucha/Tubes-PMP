@@ -15,6 +15,17 @@ typedef struct Barang {
     struct Barang* next;   // 2 byte  (Pointer memori di arsitektur 16-bit Arduino)
 } Barang;
 
+enum KodePesan {
+    PESAN_UPDATE_BERHASIL = 1,
+    PESAN_DATA_KOSONG,
+    PESAN_ID_TIDAK_DITEMUKAN,
+    PESAN_STOK_TIDAK_VALID,
+    PESAN_STATUS_TIDAK_VALID,
+    PESAN_FORMAT_SALAH,
+    PESAN_ID_DUPLIKAT,
+    PESAN_ALOKASI_GAGAL,
+    PESAN_TAMBAH_BERHASIL
+};
 
 // Total alokasi per node: ~78 Byte.
 // Dengan ukuran ini, SRAM 2KB Arduino aman menampung hingga 20-22 barang
@@ -27,15 +38,17 @@ typedef struct Barang {
 void inisialisasiList(Barang** head_pointer);
 
 // Fungsi Tambah Node di akhir (Tail)
-void tambahBarang(unsigned int id, char* nama, char* kategori, int stok, char* lokasi, char* status, char* pemilik, char* pic);
-
+void tambahBarang(Barang** head, Barang** tail, unsigned int id, const char* nama, 
+                  const char* kategori, int stok, const char* lokasi, 
+                  const char* status, const char* pemilik, const char* pic, int *kode_pesan);
+  
 // Fungsi Hapus Node (harus bisa handle head, tengah, dan tail)
 void hapusBarang(unsigned int target_id);
 
 // Fungsi Cari Node (Menggunakan double pointer untuk mengembalikan hasil pencarian)
-void cariBarang(unsigned int target_id, Barang** hasil_pencarian);
+void cariBarang(Barang* head, unsigned int target_id, Barang** hasil_pencarian);
 
 // Fungsi Update Stok dan Status
-void updateBarang(unsigned int target_id, int stok_baru, char* status_baru);
+void updateBarang(Barang *head, unsigned int target_id, int stok_baru, char* status_baru, int *kode_pesan);
 
 #endif
