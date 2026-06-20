@@ -5,6 +5,8 @@
 Barang* head_node = NULL; 
 Barang* tail_node = NULL; 
 
+bool status_sistem = true; 
+
 int main(void) {
     init();
 
@@ -12,13 +14,12 @@ int main(void) {
     inisialisasiList(&head_node); 
     inisialisasiUI();
 
-    while (1) {
+    while (status_sistem) {
         bacaInputSerial(); 
         
         if (serialEventRun) {
             serialEventRun(); 
         }
     }
-
     return 0;
 }

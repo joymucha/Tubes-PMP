@@ -7,6 +7,7 @@
 
 extern Barang* head_node;
 extern Barang* tail_node; 
+extern bool status_sistem; 
 
 void inisialisasiUI() {
     Serial.begin(9600);
@@ -138,6 +139,18 @@ void parseDanEksekusi(char* input_teks) {
     else if (strcmp(token_perintah, "PRINT") == 0) {
         tampilkanSemuaBarang();
     } 
+
+    else if (strcmp(token_perintah, "EXIT") == 0) {
+        Serial.println(F("========================================="));
+        Serial.println(F("-> SISTEM KELUAR."));
+        Serial.println(F("-> Program selesai dan mengeksekusi return 0."));
+        Serial.println(F("========================================="));
+        
+        Serial.flush();
+
+        status_sistem = false; 
+    }
+
     else {
         Serial.println(F("-> ERROR: Perintah tidak dikenali oleh sistem."));
     }
