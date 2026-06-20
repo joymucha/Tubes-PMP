@@ -1,6 +1,8 @@
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
+#define CADANGAN_SRAM_AMAN 500
+
 typedef struct Barang {
     unsigned int id;       // 2 byte (Kapasitas ID: 0 hingga 65,535)
     char nama[16];         // 16 byte (Maksimal 15 huruf + 1 null terminator)
@@ -37,4 +39,5 @@ void cariBarang(Barang* head, unsigned int target_id, Barang** hasil_pencarian);
 
 void updateBarang(Barang *head, unsigned int target_id, int stok_baru, char* status_baru, int *kode_pesan);
 
+void cekMemoriBebas(int *jumlah_byte);
 #endif

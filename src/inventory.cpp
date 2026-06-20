@@ -183,3 +183,24 @@ void hapusBarang(unsigned int target_id) {
 
     free(current); 
 }
+
+//cek memori 
+extern char __heap_start;
+extern char *__brkval;
+
+void cekMemoriBebas(int *jumlah_byte){
+    char posisis_stack;
+    char *akhir_heap;
+
+    if(jumlah_byte == NULL){
+        return;
+    }
+
+    if(__brkval == NULL){
+        akhir_heap = &__heap_start;
+    } else {
+        akhir_heap = (char *)__brkval;
+    }
+
+    *jumlah_byte = (int)(&posisis_stack - akhir_heap);
+}

@@ -58,6 +58,16 @@ void parseDanEksekusi(char* input_teks) {
 
         tambahBarang(&head_node, &tail_node, id, token_nama, token_kategori, stok, token_lokasi, token_status, token_pemilik, token_pic, &kode_pesan);
         cetakPesan(kode_pesan);
+
+        int memori_bebas = 0;
+        cekMemoriBebas(&memori_bebas);
+        Serial.print(F("-> SRAM Bebas: "));
+        Serial.print(memori_bebas);
+        Serial.println(F(" byte"));
+
+        if(kode_pesan == PESAN_TAMBAH_BERHASIL && memori_bebas < CADANGAN_SRAM_AMAN){
+            Serial.println(F("-> PERINGATAN: SRAM hampir habis."));
+        }
     } 
     
     else if (strcmp(token_perintah, "DEL") == 0) {
